@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>正中心那一口 · 换了大小和形状，要泡多久才入味到中间</title>
+<meta name="description" content="上次那块泡了多久刚好入味，这次切大了、换成整条或者整个蛋，要泡多久味道才进到正中心。按扩散规律换算：大一倍要泡四倍，切短不如切薄。">
+<style>
+  :root{--bg:#f4f1ea;--card:#fff;--ink:#23201b;--ink2:#58524a;--mut:#8e877c;--line:#ddd5c6;--red:#b3261e;--ok:#2b7a4b;--a:#8a5a2b;--b:#c99a5b;--hi:#fbf0cf;--last:#6f7f8f}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:22px 14px 72px}
+  h1{font-size:32px;line-height:1.2;margin:0 0 6px}
+  .sub{color:var(--ink2);margin:0;font-size:15.5px}
+  .muted{color:var(--mut);font-size:13.5px}
+  .hide{display:none !important}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:13.5px;color:var(--ink2)}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0;min-width:0}
+  .h2{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  /* 对照表：左上次、右这次 */
+  .vs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+  .col{border:1px solid var(--line);border-radius:8px;padding:12px 12px 10px;min-width:0;background:#fffdf8}
+  .col.last{border-top:4px solid var(--last)} .col.this{border-top:4px solid var(--a)}
+  .col h3{margin:0 0 6px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+  .seg button{background:#fff;border:0;border-right:1px solid var(--line);padding:4px 10px;font-size:13px;color:var(--ink2)}
+  .seg button:last-child{border-right:0}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin-top:8px}
+  .f{min-width:0}
+  .f.wide{grid-column:1/-1}
+  .f label{display:block;font-size:12.5px;color:var(--ink2);margin-bottom:2px}
+  input[type=text]{border:1px solid var(--line);border-radius:6px;padding:7px 9px;background:#fff;font-size:16px;width:100%;min-width:0;font-variant-numeric:tabular-nums}
+  input.bad{border-color:var(--red);background:#fff4f2}
+  .hint{font-size:12px;color:var(--mut);margin-top:2px;line-height:1.4}
+  .mode{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px;font-size:14px;color:var(--ink2)}
+  .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px;margin-top:12px}
+  .box.bad{border:1px solid var(--red);background:#fff4f2;border-radius:8px;padding:10px 14px;margin-top:12px;color:var(--red);font-size:14.5px}
+  .box.bad ul{margin:4px 0 0;padding-left:20px}
+  /* 结论对照表 */
+  table.cmp{width:100%;border-collapse:collapse;font-size:15px;table-layout:fixed}
+  table.cmp th,table.cmp td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+  table.cmp th{font-size:12.5px;color:var(--mut);font-weight:600;width:28%}
+  table.cmp td.n{font-variant-numeric:tabular-nums}
+  table.cmp tr.key td{font-size:20px;font-weight:800}
+  table.cmp tr.key td.this{color:var(--a)}
+  .headline{font-size:16.5px;margin:12px 0 0;overflow-wrap:anywhere}
+  .verdict{display:inline-block;border-radius:6px;padding:2px 10px;font-weight:800;font-size:14px;margin-top:8px}
+  .verdict.ok{background:#e6f3ea;color:var(--ok)} .verdict.no{background:#fbe9e7;color:var(--red)}
+  svg.chart{width:100%;height:auto;display:block}
+  .lg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2);margin-top:6px}
+  .lg i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px}
+  .act{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:6px;padding:9px 12px;margin:6px 0;font-size:14.5px;overflow-wrap:anywhere}
+  .act:hover{border-color:var(--ink)}
+  .act small{display:block;color:var(--mut);font-size:13px}
+  table.grid{border-collapse:collapse;width:100%;font-size:14px}
+  table.grid th,table.grid td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.grid th:first-child,table.grid td:first-child{text-align:left;white-space:nowrap}
+  #shapes td:first-child{white-space:normal}
+  table.grid th{font-size:12.5px;color:var(--mut);font-weight:600}
+  table.grid tr.cur td{background:var(--hi);font-weight:700}
+  table.grid td.no{color:var(--red)} table.grid td.yes{color:var(--ok)}
+  .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .note{font-size:13.5px;color:var(--ink2);overflow-wrap:anywhere}
+  .note li{margin:3px 0}
+  .bar2{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .btn{background:var(--ink);border:1px solid var(--ink);color:#fff;border-radius:6px;padding:7px 12px;font-size:14px}
+  .btn.ghost{background:#fff;color:var(--ink)}
+  .foot{color:var(--mut);font-size:13px;margin-top:22px}
+  @media (max-width:700px){
+    h1{font-size:26px}
+    .panel{padding:13px 12px}
+    .vs,.two{grid-template-columns:minmax(0,1fr)}
+    .form{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .row3{grid-template-columns:repeat(2,minmax(0,1fr))}
+    table.cmp{font-size:14px} table.cmp tr.key td{font-size:17px}
+    table.grid th,table.grid td{padding:5px 5px;font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>正中心那一口</h1>
+  <p class="sub">上次那块泡了多久刚好入味，这次切大了、换成整条、或者整个蛋，要泡多久味道才进到正中间？味道是从表面一点点往里渗的：同样的形状大一倍，要泡差不多四倍；切短不如切薄。把上次和这次的大小填进来，换算这次要泡多久。</p>
+  <div class="chips" id="presets"></div>
+  <p class="muted" id="presetNote"></p>
+
+  <div class="panel">
+    <div class="mode">怎么定渗得多快：<span class="seg" id="modeSeg"><button type="button" data-m="calib" id="mode_calib">按上次的经验</button><button type="button" data-m="direct" id="mode_direct">我知道 D 值</button></span> <span class="muted" id="saveTag"></span></div>
+    <div class="vs">
+      <div class="col last" id="lastCol">
+        <h3>上次 <span class="seg" id="lShapeSeg"></span></h3>
+        <div class="form">
+          <div class="f wide"><label for="lName">叫什么</label><input type="text" id="lName" autocomplete="off" maxlength="24"></div>
+          <div class="f" id="lA_f"><label for="lA" id="lA_l"></label><input type="text" id="lA" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f" id="lB_f"><label for="lB" id="lB_l"></label><input type="text" id="lB" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f" id="lC_f"><label for="lC" id="lC_l"></label><input type="text" id="lC" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f wide"><label for="lHours">泡了多久正中心刚好入味（小时）</label><input type="text" id="lHours" inputmode="decimal" autocomplete="off" maxlength="8"><div class="hint">切开看最中间那一口，刚好有味道时的时长</div></div>
+        </div>
+      </div>
+      <div class="col last hide" id="dCol">
+        <h3>渗透快慢 D</h3>
+        <div class="form">
+          <div class="f wide"><label for="dval">D（mm²/小时）</label><input type="text" id="dval" inputmode="decimal" autocomplete="off" maxlength="8"><div class="hint">本页不内置任何食材的 D 值；不知道就切回「按上次的经验」，用你自己泡过的一次反推</div></div>
+        </div>
+      </div>
+      <div class="col this">
+        <h3>这次 <span class="seg" id="tShapeSeg"></span></h3>
+        <div class="form">
+          <div class="f wide"><label for="tName">叫什么</label><input type="text" id="tName" autocomplete="off" maxlength="24"></div>
+          <div class="f" id="tA_f"><label for="tA" id="tA_l"></label><input type="text" id="tA" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f" id="tB_f"><label for="tB" id="tB_l"></label><input type="text" id="tB" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f" id="tC_f"><label for="tC" id="tC_l"></label><input type="text" id="tC" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+          <div class="f wide"><label for="plan">打算泡多久（小时）</label><input type="text" id="plan" inputmode="decimal" autocomplete="off" maxlength="8"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="f"><label for="target">「入味」= 正中心到料汁的（%）</label><input type="text" id="target" inputmode="decimal" autocomplete="off" maxlength="5"><div class="hint">上次和这次用同一个标准</div></div>
+      <div class="f" style="align-self:end"><button type="button" class="btn ghost" id="reset">回到默认</button></div>
+    </div>
+    <div class="box bad hide" id="errBox"></div>
+  </div>
+
+  <div id="res">
+    <div class="panel">
+      <div class="h2">上次 vs 这次</div>
+      <table class="cmp" id="cmp"></table>
+      <span class="verdict" id="verdict"></span>
+      <p class="headline" id="headline"></p>
+    </div>
+
+    <div class="panel">
+      <div class="h2">这次泡着泡着，正中心和整块平均各到多少 <span class="muted">纵轴：到料汁的百分之几</span></div>
+      <div id="chart"></div>
+      <div class="lg"><span><i style="background:var(--a)"></i>正中心</span><span><i style="background:var(--b)"></i>整块平均</span><span><i style="background:var(--ink);height:1px;border-top:1px dashed var(--ink)"></i>你的入味标准</span><span><i style="background:var(--red);width:3px;height:12px"></i>打算泡到</span></div>
+      <p class="note" id="chartNote"></p>
+    </div>
+
+    <div class="panel" id="actPanel">
+      <div class="h2">想在打算的时间里泡透，改哪一处</div>
+      <div id="acts"></div>
+      <p class="note" id="actNote"></p>
+    </div>
+
+    <div class="two">
+      <div class="panel">
+        <div class="h2">同一块整体变大变小</div>
+        <div class="scroll"><table class="grid" id="grid"></table></div>
+        <p class="note" id="gridNote"></p>
+      </div>
+      <div class="panel">
+        <div class="h2">最薄一边一样，换个形状</div>
+        <div class="scroll"><table class="grid" id="shapes"></table></div>
+        <p class="note" id="shapeNote"></p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="h2">「入味」的标准换一下</div>
+      <div class="scroll"><table class="grid" id="targets"></table></div>
+      <p class="note" id="targetNote"></p>
+    </div>
+
+    <div class="panel">
+      <div class="h2">这张表没算进去的事</div>
+      <ul class="note">
+        <li>按扩散规律（菲克定律）算：料汁浓度一直不变、整块料里外一样、渗透快慢不随时间和温度变。实际里温度、盐糖浓度、肉的纹理方向都会改渗透快慢，所以「按上次的经验」时，上次和这次要用同一锅料、同一个温度。</li>
+        <li>不算皮、壳、筋膜、肥膘挡一层，不算加热时翻滚、扎孔、按摩、真空，也不算料在锅里缩水变小。蛋带壳泡时壳是一层阻挡，换算会偏快。</li>
+        <li>只换算「要泡多久」，不判断咸淡口味，也不做食品安全判断；生肉长时间腌、泡，能放多久、要不要冷藏请按食材自己的要求。</li>
+        <li>形状按理想的长方块、圆柱、球算；不规则的块按最接近的形状和最薄那一边估。</li>
+        <li>默认数字都是虚构示例，不对应任何菜谱或实测数据。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bar2">
+    <button type="button" class="btn" id="dlPng">结果卡 PNG</button>
+    <button type="button" class="btn ghost" id="dlCsv">CSV</button>
+    <button type="button" class="btn ghost" id="dlMd">Markdown</button>
+    <button type="button" class="btn ghost" id="dlJson">备份 JSON</button>
+    <button type="button" class="btn ghost" id="impJson">导入备份</button>
+    <input type="file" id="impFile" accept="application/json,.json" class="hide">
+  </div>
+
+  <p class="foot">默认数字是虚构示例。全部在你的浏览器里算，不联网，输入只存在本机。</p>
+</div>
+<script src="./core.js"></script>
+<script src="./ui.js"></script>
+</body>
+</html>
